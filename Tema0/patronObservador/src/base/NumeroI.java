@@ -1,4 +1,4 @@
-package Tema0.base;
+package base;
 
 public class NumeroI extends NumeroComplejo {
     public NumeroI() {

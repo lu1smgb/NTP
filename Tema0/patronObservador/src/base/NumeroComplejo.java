@@ -1,13 +1,17 @@
-package Tema0.base;
+package base;
 
+import java.util.List;
+import java.util.Random;
 import java.util.ArrayList;
-import Tema0.observer.Observador;
+import observadorInterfaz.Observador;
 
 // java NumeroComplejo.java [args]
 public class NumeroComplejo {
 
     /**
-     * Contador de objetos
+     * Variables estaticas
+     * - Contador de objetos
+     * - Identificador de clase
      */
     private static long contadorObjetos = 0;
     public final static String IDCLASE = "NumeroComplejo";
@@ -30,13 +34,14 @@ public class NumeroComplejo {
     /**
      * Observadores
      */
-    private ArrayList<Observador> observadores;
+    private List<Observador> observadores;
 
     /**
      * Constructor por defecto
      */
     public NumeroComplejo() {
         id = NumeroComplejo.contadorObjetos++;
+        this.observadores = new ArrayList<Observador>();
     };
 
     /**
@@ -96,6 +101,7 @@ public class NumeroComplejo {
      */
     public void setX(double x) {
         this.x = x;
+        notificar();
     } 
 
     /**
@@ -104,6 +110,7 @@ public class NumeroComplejo {
      */
     public void setY(double y) {
         this.y = y;
+        notificar();
     }
 
     /**
@@ -112,6 +119,27 @@ public class NumeroComplejo {
      */
     public void setId(long id) {
         this.id = id;
+        notificar();
+    }
+
+    /**
+     * Agrega un observador a la lista de observadores del numero
+     * @param obs Observador a agregar
+     */
+    public void aniadirObservador(Observador obs) {
+        if (!this.observadores.contains(obs)) {
+            this.observadores.add(obs);
+            //// obs.asignarObservado(this);
+        }
+    }
+
+    /**
+     * Metodo para notificar a todos los observadores que actualizen su vista
+     */
+    public void notificar() {
+        for (Observador observador : this.observadores) {
+            observador.actualizar(this);
+        }
     }
 
     /**
@@ -122,6 +150,7 @@ public class NumeroComplejo {
     public static void duplicar(NumeroComplejo num) {
         num.setX(num.getX()*2);
         num.setY(num.getY()*2);
+        num.notificar();
     }
 
     /**
@@ -131,6 +160,7 @@ public class NumeroComplejo {
     public void duplicar() {
         this.x *= 2;
         this.y *= 2;
+        notificar();
     }
 
     /**
@@ -139,7 +169,9 @@ public class NumeroComplejo {
      * @param num Numero complejo sobre el que realizar la operacion
      */
     public static void cambiarAzar(NumeroComplejo num) {
-        // TODO
+        Random rng = new Random();
+        num = new NumeroComplejo(rng.nextDouble(), rng.nextDouble());
+        num.notificar();
     }
 
     /**
@@ -147,7 +179,10 @@ public class NumeroComplejo {
      * Version no estatica / de instancia
      */
     public void cambiarAzar() {
-        // TODO
+        Random rng = new Random();
+        this.setX(rng.nextDouble());
+        this.setY(rng.nextDouble());
+        notificar();
     }
 
     @Override

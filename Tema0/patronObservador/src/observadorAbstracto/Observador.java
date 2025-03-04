@@ -1,11 +1,12 @@
-package Tema0.observer;
+package observadorAbstracto;
 
-import Tema0.base.NumeroComplejo;
+import base.NumeroComplejo;
 
 /**
  * Clase base para el comportamiento de visualizacion
  * de objetos de la clase numero complejo
  */
+@Deprecated
 public abstract class Observador {
 
     protected NumeroComplejo observado;

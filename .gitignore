@@ -1,2 +1,5 @@
+# VSCode config
 .vscode
-PlantillaProyecto
+
+# MAC OS Metafiles
+._*

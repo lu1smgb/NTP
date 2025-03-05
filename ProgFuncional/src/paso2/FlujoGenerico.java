@@ -1,10 +1,12 @@
 package paso2;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.IntBinaryOperator;
+import java.util.stream.Collector;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -26,19 +28,16 @@ public class FlujoGenerico {
     */
    public FlujoGenerico(int numeroEnteros){
       Random generador = new Random();
-      generador.setSeed(0);
-
-      // se crean los contenedores de objetos
-      enteros = new ArrayList<>();
-      cadenas = new ArrayList<>();
+      generador.setSeed(1);
 
       // se agregan enteros a la lista: valores entre
       // -100 y 100
-      for(int i=0; i < numeroEnteros; i++){
-         enteros.add(generador.nextInt() % 101);
-      }
+      //// for(int i=0; i < numeroEnteros; i++){
+      ////    enteros.add(generador.nextInt() % 101);
+      //// }
+      enteros = IntStream.range(0, 10).boxed().map(x -> generador.nextInt() % 101).toList();
 
-      // se agregan ahora algunas cadenas
+      cadenas = new ArrayList<>();
       cadenas.add("Rojo");
       cadenas.add("Naranja");
       cadenas.add("Amarillo");
@@ -72,15 +71,109 @@ public class FlujoGenerico {
 
    // Version unitaria 1 de listarFuncional
    private void listarFuncionalUnitario() {
-      this.enteros.forEach(x -> System.out.println(x));
+      enteros.forEach(x -> System.out.println(x));
       // this.enteros.forEach(System.out::println);
    }
 
    private int sumarFuncional() {
 
       // sum() se aplica a IntStream, conversion realizada por un mapToInt que no hace nada
-      return this.enteros.stream().mapToInt(x -> x).sum();
+      return enteros.stream()
+         .mapToInt(x -> x).sum();
 
+   }
+
+   private int sumarFuncionalReduce() {
+
+      // Es una especie de iterador
+      // 'x' es el acumulador e 'y' es el valor a agregar
+      // El primer argumento de reduce() es el resultado por defecto
+      // Este resultado cambiara con el valor de retorno de la expresion lambda
+      return enteros.stream()
+         .reduce(0, (x, y) -> x+y);
+
+   }
+
+   private long sumarCuadradosReduce() {
+      return enteros.stream()
+         .reduce(0, (x, y) -> x+y*y);
+   }
+
+   private long sumarCuadradosMap() {
+      return enteros.stream()
+         .mapToLong(x -> x*x)
+         .sum();
+   }
+
+   private long obtenerMaximo() {
+      return enteros.stream()
+         .reduce(Integer.MIN_VALUE, (x,y) -> {
+            int max = x;
+            if (max < y) max = y;
+            return max;
+         });
+   }
+
+   public List<Double> divisionPorMil() {
+      // return enteros.stream().map(x -> x/1000.0).collect(Collectors.toList());
+      //! toList solo esta disponible en map (clase Stream<>)
+      return enteros.stream()
+         .map(x -> x/1000.0)
+         .toList();
+   }
+
+   public List<Integer> filtrarPares() {
+      return enteros.stream()
+         .filter(x -> x % 2 == 0)
+         .toList();
+   }
+
+   public List<Integer> filtrarParesNoRepetidos() {
+      // 'distinct' elimina elementos repetidos
+      return enteros.stream()
+         .filter(x -> x % 2 == 0)
+         .distinct()
+         .toList();
+   }
+
+   public List<Double> procesarRango() {
+      // Lista de valores Integer
+      IntStream intRange = IntStream.rangeClosed(0, 100);
+      // Con 'boxed' puedo transformar un stream dedicado a uno generico
+      Stream<Integer> boxed = intRange.boxed();
+      Stream<Double> doubleRange = boxed.map(x -> x*0.1);
+      return doubleRange.toList();
+   }
+
+   public void conversionArrays() {
+      int array[] = {1,2,3,4,5};
+      IntStream s1 = Arrays.stream(array);
+      IntStream s2 = IntStream.of(array);
+   }
+
+   public List<Integer> paresUnicosOrdenados() {
+      return enteros.stream()
+         .distinct()
+         .filter(x -> x%2==0)
+         .sorted()
+         .toList();
+   }
+
+   public List<String> pasarMayusculas() {
+      return cadenas.stream()
+         .map(x -> x.toUpperCase())
+         .toList();
+   }
+
+   public void listarCadenas() {
+      cadenas.forEach(System.out::println);
+   }
+
+   public List<String> filtrarYOrdenarCadenas() {
+      return cadenas.stream()
+         .filter(x -> x.compareToIgnoreCase("m") > 0)
+         .sorted(String.CASE_INSENSITIVE_ORDER.reversed())
+         .toList();
    }
 
    /**
@@ -93,6 +186,13 @@ public class FlujoGenerico {
       FlujoGenerico flujo = new FlujoGenerico(10);
       flujo.listarFuncionalUnitario();
       System.out.println("Suma: " + flujo.sumarFuncional());
+      System.out.println("Maximo: " + flujo.obtenerMaximo());
+      flujo.enteros = flujo.paresUnicosOrdenados();
+      flujo.listarFuncionalUnitario();
+      // flujo.cadenas = flujo.pasarMayusculas();
+      // flujo.listarCadenas();
+      flujo.cadenas = flujo.filtrarYOrdenarCadenas();
+      flujo.listarCadenas();
 
    }
 }

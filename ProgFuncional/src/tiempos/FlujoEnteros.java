@@ -1,5 +1,6 @@
 package tiempos;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.OptionalInt;
 import java.util.Random;
@@ -31,23 +32,23 @@ public class FlujoEnteros {
     * suma de valores al cuadrado con aproximacion reduce
     * @return
     */
-   public int sumarFuncionalCuadradosReduce(){
-      return 0;
+   public double sumarFuncionalCuadradosReduce(){
+      return Arrays.stream(valores).mapToDouble(x -> x).reduce(0, (x,y) -> x + y*y);
    }
 
    /**
     * suma de cuadrados mediante map + sum
     * @return
     */
-   public int sumarFuncionalCuadradosMap() {
-      return 0;
+   public double sumarFuncionalCuadradosMap() {
+      return Arrays.stream(valores).mapToDouble(x -> Math.pow(Math.log(x), 2)).sum();
    }
 
    /**
     * suma de cuadrados con paralelismo + map + sum
     * @return
     */
-   public int sumarFuncionalCuadradosMapParalelo() {
+   public double sumarFuncionalCuadradosMapParalelo() {
       return 0;
    }
 
@@ -55,10 +56,10 @@ public class FlujoEnteros {
     * version imperativa de la suma
     * @return
     */
-   public long sumarCuadradosImperativo(){
-      long suma = 0;
+   public double sumarCuadradosImperativo(){
+      double suma = 0;
       for(int i=0; i < valores.length; i++){
-         suma += valores[i]*valores[i];
+         suma += Math.log(valores[i]*valores[i]);
       }
       return suma;
    }

@@ -51,4 +51,8 @@ public class ComparaTiempos {
    public void sumaCuadradosImperativo() {
       objeto.sumarCuadradosImperativo();
    }
+
+   public static void main(String[] args) {
+      
+   }
 }

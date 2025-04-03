@@ -1,0 +1,146 @@
+package almacenpixels;
+
+import convergencia.EstrategiaConvergencia;
+import imagen.ComponentesRGBA;
+import imagen.Pixel;
+import imagen.SoporteDatosImagen;
+import kmedias.AcumuladorDatosGrupos;
+import kmedias.DatosClasificacion;
+import utilidades.Utilidades;
+
+import java.awt.image.BufferedImage;
+import java.text.DecimalFormat;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+/**
+ * almacen de pixels que definen el contenido de la imagen
+ */
+public class ListaPixels extends AlmacenPixels {
+    /**
+     * almacen de datos
+     */
+    private List<Pixel> pixels;
+
+    /**
+     * constructor de la clase
+     */
+    public ListaPixels() {
+        // genera el almacen
+        this.pixels = new ArrayList<Pixel>();
+    }
+
+    /**
+     * constructor a partir de lista de pixels
+     * @param numeroFilas
+     * @param numeroColumnas
+     * @param pixels
+     */
+    public ListaPixels(int numeroFilas, int numeroColumnas, List<Pixel> pixels) {
+        this.numeroFilas = numeroFilas;
+        this.numeroColumnas = numeroColumnas;
+        this.pixels = pixels;
+    }
+
+    /**
+     * metodo de que debe dar valor a los atributos numeroFilas y numeroColumnas.
+     * Tambien debe generar la lista de pixels (atributo pixels) y el mapa
+     * de pixels y contadores (atributo mapaPixelContador). Para conseguirlo
+     * se usaran los datos almacenados en SoporteDatosImagen
+     * @param soporte
+     */
+    @Override
+    public void generarPixels(SoporteDatosImagen soporte) {
+        this.numeroFilas = soporte.obtenerNumeroFilas();
+        this.numeroColumnas = soporte.obtenerNumeroColumnas();
+        this.pixels.clear();
+
+        this.pixels = soporte.obtenerDatos().stream().map(Pixel::new).toList();
+
+//        IntStream.range(0, obtenerTamanioAlmacen()).forEach(i -> {
+//            List<Integer> datos = soporte.obtenerDatos();
+//            Pixel p = new Pixel(datos.get(i));
+//            this.pixels.add(p);
+//        });
+    }
+
+    /**
+     * genera un buffer para la imagen con los datos almacenados
+     * @return
+     */
+    @Override
+    public BufferedImage generarBuffer() {
+        BufferedImage img = new BufferedImage(this.numeroFilas, this.numeroColumnas, BufferedImage.TYPE_INT_RGB);
+        IntStream.range(0, obtenerTamanioAlmacen()).forEach(i -> {
+            List<Integer> coordenadas = Utilidades.convertirDesplazamientoIndices(i, obtenerNumeroColumnas());
+            Integer fila = coordenadas.get(0);
+            Integer columna = coordenadas.get(1);
+            Pixel p = this.pixels.get(i);
+            int indiceColor = p.obtenerIndiceColor();
+            img.setRGB(columna, fila, indiceColor);
+        });
+        return img;
+    }
+
+    /**
+     * genera un nuevo almacen con los datos transformados
+     * @param datos
+     * @return
+     */
+    @Override
+    public AlmacenPixels aplicarAgrupamiento(DatosClasificacion datos) {
+        ListaPixels nuevoAlmacen = new ListaPixels();
+        nuevoAlmacen.pixels = datos.obtenerTransformacion().values().stream().toList(); // Guardamos la transformacion en los pixels del nuevo almacen
+        nuevoAlmacen.mapaPixelContador = nuevoAlmacen.pixels.stream().distinct() // Volvemos a generar los contadores a partir de la transformada
+                .collect(Collectors.groupingBy(Function.identity(), TreeMap::new, Collectors.counting()));
+        return nuevoAlmacen;
+    }
+
+    /**
+     * obtiene el tipo de almacen
+     * @return
+     */
+    @Override
+    public TipoAlmacen obtenerTipo() {
+        return TipoAlmacen.LISTAPIXELS;
+    }
+
+    /**
+     * metodo para generar la clasificacion de pixels
+     * @param centros
+     * @return
+     * TODO: por implementar si se considera oportuno. En otro caso
+     *       podeis elegir la clase en la que se proporcionaria esta
+     *       funcionalidad
+     */
+    public DatosClasificacion clasificarPixels(List<Pixel> centros) {
+        // Aqui se hace la iteracion de clasificacion de pixeles en funcion de la distancia de los centroides para KMedias.ejecutarEtapa
+        Map<Pixel, Pixel> transformacion;
+        List<Pixel> nuevosCentros;
+
+        // Se mapea cada uno de los pixeles al centroide mas cercano y el resultado se guarda en el map de transformacion
+        pixels.stream()
+                .map(pixel -> centros.stream().min(Comparator.comparing(pixel::distanciaCuadratica)).orElse(pixel))
+                .collect(Collectors.groupingBy(Function.identity(), TreeMap::new, Collectors))
+                // TODO como guardo los resultados???
+
+        return new DatosClasificacion(transformacion, nuevosCentros);
+    }
+
+    /**
+     * obtiene informacion sobre el objeto
+     * @return
+     */
+    public String obtenerInfo(){
+        DecimalFormat df = new DecimalFormat("0.0000");
+        String cadenaMedia = df.format(obtenerMediaRepeticiones());
+        String cadenaDesviacion = df.format(obtenerDesviacionTipicaRepeticiones());
+        // se obtiene la estimacion del numero de bytes requeridos
+        String info = "Numero de pixels: " + pixels.size() + "\n";
+        info += "Media de contadores: " + cadenaMedia + "\n";
+        info += "Desviación tipica: " + cadenaDesviacion + "\n";
+        return info;
+    }
+}

@@ -56,6 +56,7 @@ public class Imagen {
     /**
      * generacion del buffer: se delega en el almacen de pixels
      * @return
+     * TODO hola
      */
     public BufferedImage generarBuffer() {
         return pixels.generarBuffer();
@@ -64,6 +65,7 @@ public class Imagen {
     /**
      * accede al contador de filas
      * @return Numero de filas de la imagen
+     * TODO hola
      */
     public int obtenerNumeroFilas() {
         return pixels.obtenerNumeroFilas();
@@ -72,6 +74,7 @@ public class Imagen {
     /**
      * accede al contador de columnas
      * @return Numero de columnas de la imagen
+     * TODO hola
      */
     public int obtenerNumeroColumnas(){
         return pixels.obtenerNumeroColumnas();
@@ -97,6 +100,7 @@ public class Imagen {
     /**
      * obtiene la entrada Pixel - contador del pixel mas repetido
      * @return
+     * TODO hola
      */
     public Map.Entry<Pixel, Long> obtenerDatosPixelMasFrecuente() {
         return pixels.obtenerDatosPixelMasFrecuente();
@@ -113,6 +117,7 @@ public class Imagen {
     /**
      * obtiene la diferencia entre el pixel de minimo y maximo color
      * @return
+     * TODO hola
      */
     public double obtenerRatioDiferencia(){
         return pixels.obtenerRatioDiferencia();

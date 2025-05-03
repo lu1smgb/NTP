@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
 /**
@@ -30,11 +31,10 @@ public interface Utilidades {
      * @param contador
      * @param limite
      * @return
-     * TODO: por implementar. Debe usarse el generador declarado como
-     *       atributo
+     * TODO: documentar
      */
     static List<Integer> generarEnterosAleatorios(int contador, int limite) {
-        return IntStream.range(0, contador).map(x -> generador.nextInt()).boxed().toList();
+        return generador.ints(0, limite).distinct().limit(contador).boxed().toList();
     }
 
     /** Utilidades para conversion de estructuras **/
@@ -48,10 +48,9 @@ public interface Utilidades {
      */
     static List<Pixel> convertirConjuntoLista(Set<Pixel> conjunto){
         // creacion de la lista
-        List<Pixel> lista = new ArrayList<>();
 
         // se agregan todos los elementos del conjunto
-        lista.addAll(conjunto);
+        List<Pixel> lista = new ArrayList<>(conjunto);
 
         // se devuelve la lista
         return lista;
@@ -110,21 +109,22 @@ public interface Utilidades {
      * @param flujo flujo a usar para la carga de datos
      * @return lista de enteros representando los colores de los pixels,
      * por columnas
-     * TODO: por implementar
+     * TODO: documentar
      */
     private static SoporteDatosImagen cargarImagen(InputStream flujo) {
         SoporteDatosImagen resultado = null;
         try {
+            //! ARREGLAR AQUII
             BufferedImage img = ImageIO.read(flujo);
             int filas = img.getHeight();
             int columnas = img.getWidth();
-            List<Integer> datos = IntStream.range(0, filas * columnas).map(desplazamiento -> {
-                List<Integer> coordenadas = convertirDesplazamientoIndices(desplazamiento, columnas);
-                Integer fila = coordenadas.get(0);
-                Integer columna = coordenadas.get(1);
-                return img.getRGB(columna, fila);
+            int numeroPixels = filas * columnas;
+            List<Integer> datos = IntStream.range(0, numeroPixels).map(desplazamiento -> {
+                List<Integer> coordenadas = convertirDesplazamientoIndices(desplazamiento, filas);
+                Integer fila = coordenadas.get(0), columna = coordenadas.get(1);
+                return (fila < filas && columna < columnas) ? img.getRGB(columna, fila) : 0;
             }).boxed().toList();
-            resultado = new SoporteDatosImagen(filas, columnas, datos);
+            resultado = new SoporteDatosImagen(columnas, filas, datos);
         } catch (IOException e) {
             System.err.println("No se ha podido cargar la imagen");
         } catch (Exception e) {

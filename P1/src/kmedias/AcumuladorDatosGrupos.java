@@ -18,10 +18,10 @@ public class AcumuladorDatosGrupos {
      * constructor de la clase
      */
     public AcumuladorDatosGrupos() {
-        rojo = 0L;
-        verde = 0L;
-        azul = 0L;
-        contador = 0L;
+        rojo = (Long) 0L;
+        verde = (Long) 0L;
+        azul = (Long) 0L;
+        contador = (Long) 0L;
     }
 
     /**
@@ -42,9 +42,9 @@ public class AcumuladorDatosGrupos {
      * @return
      */
     public Pixel calcularMedia(){
-        int mediaRojo = Math.round(rojo / contador);
-        int mediaVerde = Math.round(verde / contador);
-        int mediaAzul = Math.round(azul / contador);
+        int mediaRojo = Math.round((float) rojo / contador);
+        int mediaVerde = Math.round((float) verde / contador);
+        int mediaAzul = Math.round((float) azul / contador);
         return new Pixel(mediaRojo, mediaVerde, mediaAzul);
     }
 }

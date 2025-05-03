@@ -2,6 +2,7 @@ package seleccion;
 
 import almacenpixels.AlmacenPixels;
 import imagen.Pixel;
+import utilidades.Utilidades;
 
 import javax.swing.*;
 import java.util.Collections;
@@ -21,19 +22,10 @@ public class SeleccionAleatoria implements EstrategiaSeleccion {
      *
      * @param almacen lista de la que seleccionar k pixels
      * @return lista de objetos de la clase Pixel
-     * TODO: por implementar
+     * TODO: documentar
      */
     @Override
     public List<Pixel> seleccionar(AlmacenPixels almacen, int k) {
-        // No puede ser almacen.obtenerPixelsAleatorios(k); -> Bucle infinito
-        return new Random()
-                .ints(k, almacen.obtenerTamanioAlmacen()) // Generamos k indices aleatorios
-                .mapToObj(index ->                        // Mapeamos un indice a un pixel
-                    almacen.obtenerContadores()
-                            .keySet()
-                            .stream()
-                            .toList()
-                            .get(index)
-                ).toList();                               // Finalmente convertimos a lista
+        return almacen.obtenerPixelsAleatorios(k);
     }
 }

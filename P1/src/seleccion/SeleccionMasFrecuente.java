@@ -22,11 +22,6 @@ public class SeleccionMasFrecuente implements EstrategiaSeleccion {
      */
     @Override
     public List<Pixel> seleccionar(AlmacenPixels almacen, int k) {
-        // No puede ser almacen.obtenerPixelsMasFrecuentes(k); -> Bucle infinito
-        return almacen.obtenerContadores().entrySet().stream()                // Obtenemos las entradas de los contadores del almacen
-                .sorted(Map.Entry.<Pixel, Long>comparingByValue().reversed()) // Ordenamos en orden descendente, primero los mas frencuentes
-                .limit(k)                                                     // Obtenemos los k pixeles mas recientes
-                .map(Map.Entry::getKey)                                       // De las entradas, solamente nos quedamos con las claves, con los pixeles
-                .toList();                                                    // Convertimos a lista
+        return almacen.obtenerPixelsMasFrecuentes(k);
     }
 }

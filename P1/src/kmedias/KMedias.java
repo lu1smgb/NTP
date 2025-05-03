@@ -4,12 +4,15 @@ import almacenpixels.AlmacenPixels;
 import almacenpixels.ListaPixels;
 import almacenpixels.TipoAlmacen;
 import convergencia.*;
+import imagen.ComponentesRGBA;
 import imagen.Imagen;
 import imagen.Pixel;
+import imagen.SoporteDatosImagen;
 import seleccion.*;
 
 import java.nio.channels.Selector;
 import java.util.List;
+import java.util.Map;
 
 import static convergencia.TipoConvergencia.*;
 
@@ -158,17 +161,17 @@ public class KMedias {
      * @return
      */
     public Integer obtenerIteraciones(){
-        return iteraciones;
+        return (Integer) iteraciones;
     }
 
     /**
      * obtiene la distancia media entre los centros de una iteración
      * y de la siguiente
      * @return
+     * TODO revisar
      */
-    public double obtenerMedidaConvergencia(){
-        medidaConvergencia = detectorParada.calcularMedida(this);
-        return medidaConvergencia;
+    public double obtenerMedidaConvergencia() {
+        return detectorParada.calcularMedida(this);
     }
 
     /**
@@ -191,23 +194,74 @@ public class KMedias {
      * obtiene el valor de umbral
      * @return
      */
-    public double obtenerUmbral(){
+    public double obtenerUmbral() {
         return umbral;
     }
 
     /**
      * determina si hay que parar o no
      * @return
-     * TODO: por implementar
+     * TODO: documentar
      */
     public boolean detener() {
         return detectorParada.detener(this);
     }
 
     /**
-     * TODO: metodo por implementar
+     * TODO METODO AUXILIAR
+     * obtiene el ratio de diferencia de la imagen
+     * @return
+     * TODO: documentar
+     */
+    public double obtenerRatioDiferencia() {
+        return this.imagen.obtenerRatioDiferencia();
+    }
+
+    /**
+     * TODO: terminar y documentar
      */
     public Imagen ejecutarEtapa() {
-        DatosClasificacion clasificacion = imagen.obtenerAlmacen().clasificarPixels(centrosT2 == null ? centrosT1 : centrosT2);
+        // Clasificamos los pixeles en funcion de los centroides
+        // Los primeros centroides si es la primera etapa y los centroides generados en etapas posteriores
+        AlmacenPixels almacenOriginal = imagen.obtenerAlmacen();
+        // Clasificacion de cada pixel a uno de los centroides
+        if (centrosT2 != null) centrosT1 = centrosT2;
+        datosClasificacion = almacenOriginal.clasificarPixels(obtenerCentrosT1());
+        // Calculamos los nuevos centroides
+        centrosT2 = centrosT1.stream().map(pc ->
+                datosClasificacion.obtenerTransformacion()
+                        .entrySet().stream()
+                        .filter(e -> e.getValue() == pc)
+                        .map(Map.Entry::getKey)
+                        .reduce(
+                                new int[]{0,0,0,0},
+                                (acc, pi) -> {
+                                    acc[0] += pi.obtenerComponente(ComponentesRGBA.ROJO);
+                                    acc[1] += pi.obtenerComponente(ComponentesRGBA.VERDE);
+                                    acc[2] += pi.obtenerComponente(ComponentesRGBA.AZUL);
+                                    acc[3] += 1;
+                                    return acc;
+                                },
+                                (a, b) -> {
+                                    a[0] += b[0];
+                                    a[1] += b[1];
+                                    a[2] += b[2];
+                                    a[3] += b[3];
+                                    return a;
+                                }
+                        )
+        ).map(acc -> new Pixel(
+                acc[3] == 0 ? 0 : acc[0] / acc[3],
+                acc[3] == 0 ? 0 : acc[1] / acc[3],
+                acc[3] == 0 ? 0 : acc[2] / acc[3]
+        )).toList();
+        // Generamos el agrupamiento de pixeles, es decir, la imagen de la siguiente iteracion
+        // Se tiene que hacer en base A LOS NUEVOS CENTROIDES
+        datosClasificacion = almacenOriginal.clasificarPixels(obtenerCentrosT2());
+        AlmacenPixels almacenTransformado = almacenOriginal.aplicarAgrupamiento(datosClasificacion);
+        // Actualizamos el campo de las iteraciones
+        iteraciones++;
+        // Retornamos la imagen transformada
+        return new Imagen(almacenTransformado, imagen.obtenerRuta());
     }
 }

@@ -2,14 +2,8 @@ package seleccion;
 
 import almacenpixels.AlmacenPixels;
 import imagen.Pixel;
-import utilidades.Utilidades;
 
-import javax.swing.*;
-import java.util.Collections;
 import java.util.List;
-import java.util.Random;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * clase para realizar la seleccion de pixels de forma aleatoria

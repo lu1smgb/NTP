@@ -1,7 +1,5 @@
 package imagen;
 
-import java.util.List;
-
 /**
  * representa puntos en un espacio tridimensional
  */

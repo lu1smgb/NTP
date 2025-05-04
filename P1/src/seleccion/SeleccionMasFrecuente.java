@@ -4,9 +4,6 @@ import almacenpixels.AlmacenPixels;
 import imagen.Pixel;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.stream.IntStream;
 
 /**
  * clase para realizar la seleccion de pixels de forma aleatoria

@@ -1,10 +1,7 @@
 package almacenpixels;
 
-import convergencia.EstrategiaConvergencia;
-import imagen.ComponentesRGBA;
 import imagen.Pixel;
 import imagen.SoporteDatosImagen;
-import kmedias.AcumuladorDatosGrupos;
 import kmedias.DatosClasificacion;
 import utilidades.Utilidades;
 
@@ -130,20 +127,20 @@ public class ListaPixels extends AlmacenPixels {
      * @return
      * TODO arreglar y comentar
      */
-    public DatosClasificacion clasificarPixels(List<Pixel> centros) {
-        // Aqui se hace la iteracion de clasificacion de pixeles
-        // en funcion de la distancia de los centroides para KMedias.ejecutarEtapa
-        // Se mapea cada uno de los pixeles unicos al centroide mas cercano
-        // y el resultado se guarda en el map de transformacion
-        Map<Pixel, Pixel> transformacion = mapaPixelContador.keySet().stream()
-                .collect(Collectors.toMap(
-                        Function.identity(),
-                        pixel -> centros.stream()
-                                .min(Comparator.comparing(pixel::distanciaCuadratica))
-                                .orElse(centros.getFirst())
-                ));
-        return new DatosClasificacion(transformacion, centros);
-    }
+//    public DatosClasificacion clasificarPixels(List<Pixel> centros) {
+//        // Aqui se hace la iteracion de clasificacion de pixeles
+//        // en funcion de la distancia de los centroides para KMedias.ejecutarEtapa
+//        // Se mapea cada uno de los pixeles unicos al centroide mas cercano
+//        // y el resultado se guarda en el map de transformacion
+//        Map<Pixel, Pixel> transformacion = mapaPixelContador.keySet().stream()
+//                .collect(Collectors.toMap(
+//                        Function.identity(),
+//                        pixel -> centros.stream()
+//                                .min(Comparator.comparing(pixel::distanciaCuadratica))
+//                                .orElse(centros.getFirst())
+//                ));
+//        return new DatosClasificacion(transformacion, centros);
+//    }
 
     /**
      * obtiene informacion sobre el objeto

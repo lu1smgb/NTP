@@ -4,11 +4,7 @@ import imagen.Pixel;
 import kmedias.KMedias;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import static java.lang.Math.abs;
-import static java.lang.Math.min;
 
 /**
  * clase para aportar la funcionalidad de parada considerando

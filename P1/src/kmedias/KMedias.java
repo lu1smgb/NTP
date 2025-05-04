@@ -1,20 +1,14 @@
 package kmedias;
 
 import almacenpixels.AlmacenPixels;
-import almacenpixels.ListaPixels;
-import almacenpixels.TipoAlmacen;
 import convergencia.*;
 import imagen.ComponentesRGBA;
 import imagen.Imagen;
 import imagen.Pixel;
-import imagen.SoporteDatosImagen;
 import seleccion.*;
 
-import java.nio.channels.Selector;
 import java.util.List;
 import java.util.Map;
-
-import static convergencia.TipoConvergencia.*;
 
 /**
  * clase principal para gestionar la aplicacion del algoritmo de las

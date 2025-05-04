@@ -3,12 +3,12 @@ package almacenpixels;
 import imagen.Pixel;
 import imagen.SoporteDatosImagen;
 import kmedias.DatosClasificacion;
-import seleccion.SeleccionAleatoria;
-import seleccion.SeleccionMasFrecuente;
 import utilidades.Utilidades;
 
 import java.awt.image.BufferedImage;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 
 /**
@@ -146,13 +146,12 @@ public abstract class AlmacenPixels {
      * de los colores
      * TODO comentar
      */
-    public Long obtenerMediaRepeticiones() {
-        double media = mapaPixelContador.values()
+    public double obtenerMediaRepeticiones() {
+        return mapaPixelContador.values()
                 .stream()
                 .mapToLong(x -> x)
                 .average()
                 .orElse(0D);
-        return Double.valueOf(media).longValue();
     }
 
     /**
@@ -228,7 +227,20 @@ public abstract class AlmacenPixels {
      * @return
      * TODO comentar y decir que se ha implementado dentro de la clase listapixels
      */
-    public abstract DatosClasificacion clasificarPixels(List<Pixel> centros);
+    public DatosClasificacion clasificarPixels(List<Pixel> centros) {
+        // Aqui se hace la iteracion de clasificacion de pixeles
+        // en funcion de la distancia de los centroides para KMedias.ejecutarEtapa
+        // Se mapea cada uno de los pixeles unicos al centroide mas cercano
+        // y el resultado se guarda en el map de transformacion
+        Map<Pixel, Pixel> transformacion = mapaPixelContador.keySet().stream()
+                .collect(Collectors.toMap(
+                        Function.identity(),
+                        pixel -> centros.stream()
+                                .min(Comparator.comparing(pixel::distanciaCuadratica))
+                                .orElse(centros.getFirst())
+                ));
+        return new DatosClasificacion(transformacion, centros);
+    }
 
     /**
      * obtiene informacion sobre el objeto
